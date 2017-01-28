@@ -1,1 +1,0 @@
-# Dropwizzard-MongoDB
