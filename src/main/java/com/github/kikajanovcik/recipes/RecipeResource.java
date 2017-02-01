@@ -1,5 +1,7 @@
 package com.github.kikajanovcik.recipes;
 
+import com.mongodb.*;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
@@ -10,33 +12,24 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class RecipeResource {
 
+    private DB database;
     private List<Recipe> recipes = new ArrayList<>();
 
-    public RecipeResource() {
-        Recipe cake = new Recipe("Chocolate Cake");
-        cake.setIngredients(Arrays.asList("chocolate", "flour", "eggs"));
-        cake.setMinutes(120);
-        cake.setId(1L);
+    private final DBObject toDBObject(Recipe recipe) {
+        return new BasicDBObject("_id", recipe.getId())
+                .append("name", recipe.getName())
+                .append("ingredients", recipe.getIngredients())
+                .append("minutes", recipe.getMinutes());
+    }
 
-        Recipe omelette = new Recipe("Spanish Omelette");
-        omelette.setIngredients(Arrays.asList("eggs", "potatoes", "onion"));
-        omelette.setMinutes(30);
-        omelette.setId(2L);
+    public RecipeResource(DB database) {
+        this.database = database;
+    }
 
-        Recipe roast = new Recipe("Sunday Roast");
-        roast.setIngredients(Arrays.asList("turkey", "gravy", "potatoes", "brussel sprouts"));
-        roast.setMinutes(240);
-        roast.setId(3L);
-
-        Recipe pancakes = new Recipe("Pancakes");
-        pancakes.setIngredients(Arrays.asList("eggs", "flour", "sugar", "milk"));
-        pancakes.setMinutes(30);
-        pancakes.setId(4L);
-
-        recipes.add(cake);
-        recipes.add(omelette);
-        recipes.add(roast);
-        recipes.add(pancakes);
+    @GET
+    public List<Recipe> getAllRecipes() {
+        //this.recipes = collection.find().into(new ArrayList<>());
+        return recipes;
     }
 
     @GET
@@ -68,12 +61,14 @@ public class RecipeResource {
 
     @POST
     public void postRecipe(Recipe recipe) {
-        recipes.add(recipe);
-        recipe.setId(recipes.size());
+        recipes.add(recipe); //to remove
+        recipe.setId(recipes.size()); //to remove
+
+        saveToDB(recipe);
     }
 
-    @GET
-    public List<Recipe> getAllRecipes() {
-        return recipes;
+    private void saveToDB(Recipe recipe) throws NullPointerException {
+        DBCollection collection = database.getCollection("recipesCollection");
+        collection.insert(toDBObject(recipe));
     }
 }

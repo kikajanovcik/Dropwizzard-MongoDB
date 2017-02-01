@@ -1,8 +1,8 @@
 package com.github.kikajanovcik.recipes;
 
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -12,16 +12,11 @@ import java.net.UnknownHostException;
 
 public class RecipesApplication extends Application<RecipesConfiguration> {
 
-    public RecipesApplication() throws UnknownHostException {
-    }
+    public RecipesApplication() {}
 
     public static void main(String[] args) throws Exception {
         new RecipesApplication().run(args);
     }
-
-    MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-    DB database = mongoClient.getDB("RecipesDatabase");
-
 
     @Override
     public String getName() {
@@ -35,8 +30,11 @@ public class RecipesApplication extends Application<RecipesConfiguration> {
     }
 
     @Override
-    public void run(RecipesConfiguration configuration, Environment environment) {
-        final RecipeResource resource = new RecipeResource();
+    public void run(RecipesConfiguration configuration, Environment environment) throws UnknownHostException {
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        DB database = mongoClient.getDB("RecipesDatabase");
+
+        final RecipeResource resource = new RecipeResource(database);
         environment.jersey().register(resource);
     }
 }
