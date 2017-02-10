@@ -3,6 +3,7 @@ package com.github.kikajanovcik.recipes;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -32,7 +33,7 @@ public class RecipesApplication extends Application<RecipesConfiguration> {
     @Override
     public void run(RecipesConfiguration configuration, Environment environment) throws UnknownHostException {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
-        DB database = mongoClient.getDB("RecipesDatabase");
+        MongoDatabase database = mongoClient.getDatabase("RecipesDatabase");
 
         final RecipeResource resource = new RecipeResource(database);
         environment.jersey().register(resource);
