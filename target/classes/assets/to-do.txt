@@ -1,0 +1,13 @@
+-mongod --rest --httpinterface
+ -sudo service mongod start
+ -sudo service mongod stop
+ -nmap -p 27017 127.0.01
+ -mongod
+ -
+ -
+ -show dbs
+ -use <database name>
+ -db.<collection name>.findOne()
+ -db.<collection name>.count()
+ -db.<collection name>.find().pretty()
+ -db.<collection name>.remove({"_id" : "XXX"}) //query

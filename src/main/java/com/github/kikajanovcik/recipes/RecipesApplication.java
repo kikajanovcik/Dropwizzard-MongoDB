@@ -35,6 +35,7 @@ public class RecipesApplication extends Application<RecipesConfiguration> {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         MongoDatabase database = mongoClient.getDatabase("RecipesDatabase");
 
+        environment.healthChecks().register("mongo", new MongoHealthCheck(mongoClient));
         final RecipeResource resource = new RecipeResource(database);
         environment.jersey().register(resource);
     }
